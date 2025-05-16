@@ -78,10 +78,15 @@ export default function HomePage() {
   }
 
   const handleAddPost = () => {
-    if (novaImagem && usuario) {
+  if (novaImagem && usuario) {
+    const reader = new FileReader()
+
+    reader.onloadend = () => {
+      const base64String = reader.result as string
+
       const newPost: Post = {
         id: posts.length + 1,
-        url: URL.createObjectURL(novaImagem),
+        url: base64String, 
         autor: {
           nome: usuario.nome,
           email: usuario.email,
@@ -94,11 +99,22 @@ export default function HomePage() {
 
       const postsAtualizados = [newPost, ...posts]
       setPosts(postsAtualizados)
-      localStorage.setItem('postsDogSpot', JSON.stringify(postsAtualizados.filter(p => p.id < 1000)))
+
+    
+      localStorage.setItem(
+        'postsDogSpot',
+        JSON.stringify(postsAtualizados.filter(p => p.id < 1000))
+      )
+
       setNovaImagem(null)
       setShowModal(false)
     }
+
+   
+    reader.readAsDataURL(novaImagem)
   }
+}
+
 
   const toggleCurtir = (id: number) => {
     const novos = posts.map(post => {
